@@ -25,41 +25,55 @@ class PetVisualizarScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding( // Foto perfil
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 10.0,
+              ),
+              child: Text('Dados do pet',
+                  style: Theme.of(context).textTheme.headlineLarge
+              ),
+            ),
+            Padding( // Foto
               padding: EdgeInsets.all(20.0),
               child: CircleAvatar(
                 radius: 60,
-                child: Icon(Icons.person, size: 60),
+                child: Icon(Icons.pets, size: 60),
               ),
             ),
             SizedBox(height: 20),
-            // Dados do usuário
-            Card(
-              elevation: 0,
+            // Dados
+            Expanded(
               child: Padding(
                 padding: EdgeInsets.all(20.0),
-                child: Column(
+                child: ListView(
                   children: [
                     ListTile(
-                      leading: Icon(Icons.pets),
                       title: Text('Nome', style: TextStyle(fontSize: 20),),
                       subtitle: Text('Pipoca', style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
-                      leading: Icon(Icons.question_mark),
+                      title: Text('Espécie', style: TextStyle(fontSize: 20),),
+                      subtitle: Text('Gato', style: TextStyle(fontSize: 18)),
+                    ),
+                    Divider(),
+                    ListTile(
                       title: Text('Sexo', style: TextStyle(fontSize: 20),),
                       subtitle: Text('Masculino', style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
-                      leading: Icon(Icons.calendar_month),
+                      title: Text('Raça', style: TextStyle(fontSize: 20),),
+                      subtitle: Text('SRD', style: TextStyle(fontSize: 18)),
+                    ),
+                    Divider(),
+                    ListTile(
                       title: Text('Data de nascimento', style: TextStyle(fontSize: 20),),
                       subtitle: Text('19/06/2018', style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
-                      leading: Icon(Icons.medical_services),
                       title: Text('Observações', style: TextStyle(fontSize: 20),),
                       subtitle: Text('Tomar remédio p/ vermes\nLimpar orelhas 1 vez por semana', style: TextStyle(fontSize: 18)),
                       isThreeLine: true,
@@ -68,8 +82,6 @@ class PetVisualizarScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20),
-
             ElevatedButton.icon(
               onPressed: () {
                 // TODO: Implementar lógicas de botões
@@ -83,7 +95,6 @@ class PetVisualizarScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-
             TextButton.icon(
               onPressed: () {
                 // TODO: Implementar exclusão de conta
@@ -95,6 +106,7 @@ class PetVisualizarScreen extends StatelessWidget {
                 padding: EdgeInsets.all(16),
               ),
             ),
+            SizedBox(height: 20),
           ],
         ),
       ),

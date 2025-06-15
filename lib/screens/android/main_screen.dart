@@ -1,3 +1,4 @@
+import 'package:clinica_veterinaria/screens/android/consulta/consulta_visualizar_screen.dart';
 import 'package:clinica_veterinaria/screens/android/conta/conta_editar_screen.dart';
 import 'package:clinica_veterinaria/screens/android/login_screen.dart';
 import 'package:clinica_veterinaria/screens/android/pets/pet_form_screen.dart';
@@ -100,7 +101,7 @@ class _MainScreenState extends State<MainScreen> {
                 _Titulo('Pets'),
                 Expanded( //TODO: if com mensagem "não há pets registrados. Clique em + para adicionar"
                     child: ListView(
-                      children: <Widget>[
+                      children: [
                         _ItemPet(),
                         _ItemPet(),
                       ],
@@ -262,7 +263,9 @@ class _ItemConsulta extends StatelessWidget {
     return Card(
         margin: EdgeInsets.all(10),
         child: ListTile(
-          onTap: () => debugPrint('ver consulta'),
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ConsultaVisualizarScreen()
+          )),
           title: Text('Data: 10/10/2025', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           subtitle: Text('Paciente: Pipoca\nAssunto: Vacinação', style: TextStyle(fontSize: 20)),
           isThreeLine: true,
