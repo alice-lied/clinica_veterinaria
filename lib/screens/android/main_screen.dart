@@ -1,7 +1,5 @@
 import 'package:clinica_veterinaria/screens/android/consulta/consulta_visualizar_screen.dart';
-import 'package:clinica_veterinaria/screens/android/conta/conta_editar_screen.dart';
-import 'package:clinica_veterinaria/screens/android/login_screen.dart';
-import 'package:clinica_veterinaria/screens/android/pets/pet_form_screen.dart';
+import 'package:clinica_veterinaria/screens/android/pets/add_pet_screen.dart';
 import 'package:clinica_veterinaria/screens/android/pets/pet_visualizar_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -77,17 +75,10 @@ class _MainScreenState extends State<MainScreen> {
               ],
             ),
           ),
-          floatingActionButton: SizedBox(
-            width: 75,
-            height: 75,
-            child: FloatingActionButton(
-              onPressed: (){
-                debugPrint('add consulta');
-              },
-              backgroundColor: Colors.teal,
-              shape: CircleBorder(),
-              child: Icon(Icons.add, color: Colors.white, size: 30),
-            ),
+          floatingActionButton: _BotaoAdd(
+              onPressed: () {
+                debugPrint('adicionar consulta');
+              }
           ),
         ),
 
@@ -110,19 +101,12 @@ class _MainScreenState extends State<MainScreen> {
               ],
             ),
           ),
-          floatingActionButton: SizedBox(
-            width: 75,
-            height: 75,
-            child: FloatingActionButton(
-                onPressed: (){
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => PetFormScreen()
-                  ));
-                },
-              backgroundColor: Colors.teal,
-              shape: CircleBorder(),
-              child: Icon(Icons.add, color: Colors.white, size: 30),
-            ),
+          floatingActionButton: _BotaoAdd(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AddPetScreen()
+                ));
+              }
           ),
         ),
 
@@ -164,42 +148,20 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-
-              ElevatedButton.icon(
-                onPressed: () {
-                  // TODO: Implementar lógicas de botões
-                 Navigator.of(context).push(MaterialPageRoute(
-                     builder: (context) => ContaEditarScreen()
-                 ));
-                },
-                icon: Icon(Icons.edit, color: Colors.black87),
-                label: Text('Editar dados', style: TextStyle(fontSize: 18, color: Colors.black87)),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(16),
-                  backgroundColor: Colors.grey[200],
-                ),
-              ),
+              _BotaoConta(
+                  onPressed: () {
+                    debugPrint('editar conta');
+                    },
+                  icone: Icons.edit,
+                  texto: 'Editar dados'),
               const SizedBox(height: 10),
-
-              ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Implementar lógicas de botões
-                Navigator.pushReplacement<void, void>(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) => LoginScreen(),
-                  ),
-                );
-              },
-              icon: Icon(Icons.logout, color: Colors.black87),
-              label: Text('Sair da conta', style: TextStyle(fontSize: 18, color: Colors.black87)),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.all(16),
-                backgroundColor: Colors.grey[200],
-              ),
-              ),
+              _BotaoConta(
+                  onPressed: () {
+                    debugPrint('sair da conta');
+                  },
+                  icone: Icons.logout,
+                  texto: 'Sair da conta'),
               const SizedBox(height: 10),
-
               TextButton.icon(
                 onPressed: () {
                   // TODO: Implementar exclusão de conta
@@ -219,9 +181,7 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 class _Titulo extends StatelessWidget {
-
   final String texto;
-
   const _Titulo(this.texto);
 
   @override
@@ -274,3 +234,49 @@ class _ItemConsulta extends StatelessWidget {
   }
 }
 
+class _BotaoConta extends StatelessWidget {
+  final Function() onPressed;
+  final IconData icone;
+  final String texto;
+
+  const _BotaoConta({
+    required this.onPressed,
+    required this.icone,
+    required this.texto,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icone, color: Colors.black87),
+      label: Text(texto, style: TextStyle(fontSize: 18, color: Colors.black87)),
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.all(16),
+        backgroundColor: Colors.grey[200],
+      ),
+    );
+  }
+}
+
+class _BotaoAdd extends StatelessWidget {
+  final Function() onPressed;
+
+  const _BotaoAdd({
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 75,
+      height: 75,
+      child: FloatingActionButton(
+        onPressed: onPressed,
+        backgroundColor: Colors.teal,
+        shape: CircleBorder(),
+        child: Icon(Icons.add, color: Colors.white, size: 30),
+      ),
+    );
+  }
+}

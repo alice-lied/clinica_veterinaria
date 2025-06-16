@@ -1,40 +1,44 @@
 class Pet {
-  final int _id;
-  final String _nome;
-  final String _especie;
-  final String _sexo;
-  final String _raca;
-  final DateTime _nascimento;
-  final String _obs;
+  final int? idPet;
+  final String nome;
+  final String especie;
+  final String sexo;
+  final String raca;
+  final DateTime? nascimento;
+  final String? obs;
 
-  Pet(this._id, this._nome, this._especie, this._sexo, this._raca,
-      this._nascimento, this._obs);
+  Pet({
+    this.idPet,
+    required this.nome,
+    required this.especie,
+    required this.sexo,
+    required this.raca,
+    this.nascimento,
+    this.obs,
+  });
 
-  int get id{
-    return _id;
+  Map<String, dynamic> toMap(){
+    return{
+      'idPet': idPet,
+      'nome': nome,
+      'especie': especie,
+      'sexo': sexo,
+      'raca': raca,
+      'nascimento': nascimento?.toIso8601String(),
+      'obs': obs,
+    };
   }
 
-  String get nome{
-    return _nome;
+  factory Pet.fromMap(Map<String, dynamic> map) {
+    return Pet(
+      idPet: map['idPet'],
+      nome: map['nome'],
+      especie: map['especie'],
+      sexo: map['sexo'],
+      raca: map['raca'],
+      nascimento: map['nascimento'] != null ? DateTime.parse(map['birthDate']) : null,
+      obs: map['obs'],
+    );
   }
 
-  String get especie{
-    return _especie;
-  }
-
-  String get sexo{
-    return _sexo;
-  }
-
-  String get raca{
-    return _raca;
-  }
-
-  DateTime get nascimento{
-    return _nascimento;
-  }
-
-  String get obs{
-    return _obs;
-  }
 }
