@@ -23,7 +23,7 @@ class AppDatabase {
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE pets(
-            idPet INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            idPet INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT,
             especie TEXT,
             sexo TEXT,

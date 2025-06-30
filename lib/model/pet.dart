@@ -36,9 +36,10 @@ class Pet {
       especie: map['especie'] as String,
       sexo: map['sexo'] as String,
       raca: map['raca'] as String,
-      nascimento: map['nascimento'] != null ? DateTime.parse(map['birthDate']) : null,
-      obs: map['obs'] as String,
+      nascimento: map['nascimento'] != null ? DateTime.parse(map['nascimento']) : null,
+      obs: map['obs'] as String?,
     );
   }
+
 
 }
