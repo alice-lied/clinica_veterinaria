@@ -1,4 +1,6 @@
-import '../database/openDatabase.dart';
+import 'package:sqflite/sqflite.dart';
+
+import '../database/open_database.dart';
 import '../model/pet.dart';
 
 class PetDao {
@@ -6,7 +8,16 @@ class PetDao {
 
   Future<int> insertPet(Pet pet) async {
     final db = await AppDatabase().database;
-    return db.insert(table, pet.toMap());
+    // Remove o idPet para que o SQLite gere um novo
+    final mapa = pet.toMap();
+    mapa.remove('idPet'); // Garante que o SQLite gere o ID automaticamente
+
+    // Insere e retorna o ID gerado
+    return await db.insert(
+      'pets',
+      mapa,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<Pet>> getAllPets() async {
@@ -15,41 +26,20 @@ class PetDao {
     return result.map((map) => Pet.fromMap(map)).toList();
   }
 
+  Future<int> updatePet(Pet pet) async {
+    final db = await AppDatabase().database;
+    return db.update(table, pet.toMap(), where: 'idPet = ?', whereArgs: [pet.idPet]);
+  }
+
+  Future<void> deletePet(int? idPet) async {
+    final db = await AppDatabase().database;
+    await db.delete(table, where: 'idPet = ?', whereArgs: [idPet]);
+  }
+
 }
 
 /*
-import 'package:clinica_veterinaria/database/openDatabase.dart';
-
-import '../model/pet.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-
-class PetDAO{
-  final Database _database;
-
-  static const String _nomeTabela = 'pets';
-  static const String _columnId = 'id';
-  static const String _columnNome = 'nome';
-  static const String _columnEspecie = 'especie';
-  static const String _columnSexo = 'sexo';
-  static const String _columnRaca = 'raca';
-  static const String _columnNascimento = 'nascimento';
-  static const String _columnObs = 'obs';
-
-  static const String sqlTabelaPets = 'CREATE TABLE $_nomeTabela ('
-    '$_columnId INTEGER PRIMARY KEY, '
-    '$_columnNome TEXT, '
-    '$_columnEspecie TEXT, '
-    '$_columnSexo TEXT, '
-    '$_columnRaca TEXT, '
-    '$_columnNascimento TEXT, '
-    '$_columnObs TEXT )';
-
-  PetDAO(this._database);
-
-  adicionar(Pet p) async{
-    final Database db = await getDatabase();
-    await db.insert(_nomeTabela, p.toMap());
-  }
-
-}*/
+  Future<int> insertPet(Pet pet) async {
+    final db = await AppDatabase().database;
+    return db.insert(table, pet.toMap());
+  }*/

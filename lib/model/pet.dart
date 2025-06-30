@@ -31,13 +31,13 @@ class Pet {
 
   factory Pet.fromMap(Map<String, dynamic> map) {
     return Pet(
-      idPet: map['idPet'],
-      nome: map['nome'],
-      especie: map['especie'],
-      sexo: map['sexo'],
-      raca: map['raca'],
+      idPet: map['idPet'] as int?,
+      nome: map['nome'] as String,
+      especie: map['especie'] as String,
+      sexo: map['sexo'] as String,
+      raca: map['raca'] as String,
       nascimento: map['nascimento'] != null ? DateTime.parse(map['birthDate']) : null,
-      obs: map['obs'],
+      obs: map['obs'] as String,
     );
   }
 

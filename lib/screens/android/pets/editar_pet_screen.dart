@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '/model/pet.dart';
 import '/service/pet_service.dart';
 
-class AddPetScreen extends StatefulWidget {
-  const AddPetScreen({super.key});
+class EditarPetScreen extends StatefulWidget {
+  final Pet pet;
+  const EditarPetScreen({super.key, required this.pet});
 
   @override
-  AddPetScreenState createState() => AddPetScreenState();
+  _EditarPetScreenState createState() => _EditarPetScreenState();
+
 }
 
-class AddPetScreenState extends State<AddPetScreen> {
+class _EditarPetScreenState extends State<EditarPetScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _racaController = TextEditingController();
@@ -35,10 +36,20 @@ class AddPetScreenState extends State<AddPetScreen> {
     }
   }
 
+  @override void initState() {
+    super.initState();
+    _nomeController.text = widget.pet.nome;
+    _racaController.text = widget.pet.raca;
+    _obsController.text = widget.pet.obs!;
+    _especie = widget.pet.especie;
+    _sexo = widget.pet.sexo;
+    _nascimento = widget.pet.nascimento;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrar pet')),
+      appBar: AppBar(title: const Text('Editar pet')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -47,13 +58,8 @@ class AddPetScreenState extends State<AddPetScreen> {
             children: [
               TextFormField(
                 controller: _nomeController,
-                decoration: const InputDecoration(labelText: 'Nome'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Campo obrigatório';
-                  }
-                  return null;
-                },
+                decoration: const InputDecoration(labelText: 'Nome da turma'),
+                validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
               ),
               DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Espécie',),
@@ -127,7 +133,7 @@ class AddPetScreenState extends State<AddPetScreen> {
               ),
               ElevatedButton(
                 onPressed: (){
-                  _salvarPet();
+                  _editarPet();
                 },
                 child: const Text('Salvar'),
               ),
@@ -138,11 +144,11 @@ class AddPetScreenState extends State<AddPetScreen> {
     );
   }
 
-  void _salvarPet() async {
+  void _editarPet() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final pet = Pet(
-          idPet: 1,
+        final petEditado = Pet(
+          idPet: widget.pet.idPet,
           nome: _nomeController.text,
           especie: _especie,
           sexo: _sexo,
@@ -150,19 +156,19 @@ class AddPetScreenState extends State<AddPetScreen> {
           nascimento: _nascimento,
           obs: _obsController.text
         );
-        await _petService.addPet(pet);
+        await _petService.updatePet(petEditado);
 
-        print(pet.toMap());
+        print(petEditado); //debug
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Pet registrado com sucesso!')),
+          const SnackBar(content: Text('Dados editados com sucesso!')),
         );
 
-        Navigator.pop(context);
+        Navigator.of(context).pop(true);
       } catch (e) {
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao salvar pet: $e')),
+          SnackBar(content: Text('Erro ao editar dados: $e')),
         );
       }
     }

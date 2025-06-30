@@ -1,7 +1,10 @@
 import 'package:clinica_veterinaria/screens/android/consulta/consulta_visualizar_screen.dart';
 import 'package:clinica_veterinaria/screens/android/pets/add_pet_screen.dart';
-import 'package:clinica_veterinaria/screens/android/pets/pet_visualizar_screen.dart';
+import 'package:clinica_veterinaria/screens/android/pets/editar_pet_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../../model/pet.dart';
+import '../../service/pet_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -12,6 +15,47 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int currentPageIndex = 0;
+  final PetService _petService = PetService(); //alteração
+  late Future<List<Pet>> _pets; //alt
+
+  @override //alt
+  void initState(){
+    super.initState();
+    _pets = _petService.getPets();
+  }
+
+  void _atualizaPets(){ //alt
+    setState(() {
+      _pets = _petService.getPets();
+    });
+  }
+
+  void _confirmDelete(int? idPet) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: const Text('Tem certeza que deseja excluir os dados?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _petService.deletePet(idPet);
+              _atualizaPets(); // atualiza a lista
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Dados excluídos com sucesso!')),
+              );
+            },
+            child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,19 +130,60 @@ class _MainScreenState extends State<MainScreen> {
         Scaffold(
           body: Padding(
             padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _Titulo('Pets'),
-                Expanded( //TODO: if com mensagem "não há pets registrados. Clique em + para adicionar"
-                    child: ListView(
-                      children: [
-                        _ItemPet(),
-                        _ItemPet(),
-                      ],
-                    )
-                )
-              ],
+            child: FutureBuilder<List<Pet>>(
+              future: _pets,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Erro: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('Nenhum pet registrado.'));
+                }
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final pet = snapshot.data![index];
+                    return Card(
+                      margin: EdgeInsets.all(8),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.all(16),
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.blue[100],
+                          child: Text(pet.nome.substring(0,1)),
+                        ),
+                        title: Text(pet.nome, style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Text("${pet.especie} ${pet.sexo}"),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () async {
+                                final updated = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditarPetScreen(pet: pet),
+                                  ),
+                                );
+                                if (updated == true) {
+                                  _atualizaPets(); // Atualiza a lista
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _confirmDelete(pet.idPet),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
           floatingActionButton: _BotaoAdd(
@@ -198,7 +283,7 @@ class _Titulo extends StatelessWidget {
   }
 }
 
-class _ItemPet extends StatelessWidget {
+/*class _ItemPet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +299,7 @@ class _ItemPet extends StatelessWidget {
       ),
     );
   }
-}
+}*/
 
 class _ItemConsulta extends StatelessWidget {
 
@@ -280,3 +365,19 @@ class _BotaoAdd extends StatelessWidget {
     );
   }
 }
+
+/* linha 106
+Column(
+crossAxisAlignment: CrossAxisAlignment.stretch,
+children: [
+_Titulo('Pets'),
+Expanded( //TODO: if com mensagem "não há pets registrados. Clique em + para adicionar"
+child: ListView(
+children: [
+_ItemPet(),
+_ItemPet(),
+],
+)
+)
+],
+),*/

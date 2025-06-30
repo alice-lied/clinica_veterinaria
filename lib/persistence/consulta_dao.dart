@@ -1,4 +1,4 @@
-import '../database/openDatabase.dart';
+import '../database/open_database.dart';
 import '../model/consulta.dart';
 
 class ConsultaDao {
