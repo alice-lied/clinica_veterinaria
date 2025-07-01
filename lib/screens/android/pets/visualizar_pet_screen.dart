@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PetVisualizarScreen extends StatelessWidget {
-  const PetVisualizarScreen({super.key});
+class VisualizarPetScreen extends StatelessWidget {
+  const VisualizarPetScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

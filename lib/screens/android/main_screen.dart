@@ -15,8 +15,8 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int currentPageIndex = 0;
-  final PetService _petService = PetService(); //alteração
-  late Future<List<Pet>> _pets; //alt
+  final PetService _petService = PetService();
+  late Future<List<Pet>> _pets;
 
   @override //alt
   void initState(){
@@ -30,7 +30,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  void _confirmDelete(int? idPet) {
+  void _excluir(int? idPet) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -175,7 +175,7 @@ class _MainScreenState extends State<MainScreen> {
                             ),
                             IconButton(
                               icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _confirmDelete(pet.idPet),
+                              onPressed: () => _excluir(pet.idPet),
                             ),
                           ],
                         ),
@@ -283,24 +283,6 @@ class _Titulo extends StatelessWidget {
   }
 }
 
-/*class _ItemPet extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10),
-      child: ListTile(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PetVisualizarScreen()
-        )),
-        leading: CircleAvatar(radius: 25, child: Icon(Icons.pets)),
-        title: Text('Pipoca', style: TextStyle(fontSize: 22)),
-        subtitle: Text('Gato macho', style: TextStyle(fontSize: 16)),
-      ),
-    );
-  }
-}*/
-
 class _ItemConsulta extends StatelessWidget {
 
   @override
@@ -371,7 +353,7 @@ Column(
 crossAxisAlignment: CrossAxisAlignment.stretch,
 children: [
 _Titulo('Pets'),
-Expanded( //TODO: if com mensagem "não há pets registrados. Clique em + para adicionar"
+Expanded(
 child: ListView(
 children: [
 _ItemPet(),
@@ -381,3 +363,21 @@ _ItemPet(),
 )
 ],
 ),*/
+
+/*class _ItemPet extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(10),
+      child: ListTile(
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PetVisualizarScreen()
+        )),
+        leading: CircleAvatar(radius: 25, child: Icon(Icons.pets)),
+        title: Text('Pipoca', style: TextStyle(fontSize: 22)),
+        subtitle: Text('Gato macho', style: TextStyle(fontSize: 16)),
+      ),
+    );
+  }
+}*/
