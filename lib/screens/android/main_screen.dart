@@ -1,10 +1,15 @@
-import 'package:clinica_veterinaria/screens/android/consulta/consulta_visualizar_screen.dart';
 import 'package:clinica_veterinaria/screens/android/pets/add_pet_screen.dart';
 import 'package:clinica_veterinaria/screens/android/pets/editar_pet_screen.dart';
+import 'package:clinica_veterinaria/screens/android/pets/visualizar_pet_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
+import '../../model/consulta.dart';
 import '../../model/pet.dart';
+import '../../service/consulta_service.dart';
 import '../../service/pet_service.dart';
+import 'consulta/add_consulta_screen.dart';
+import 'consulta/editar_consulta_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,27 +20,38 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int currentPageIndex = 0;
+  final ConsultaService _consultaService = ConsultaService();
   final PetService _petService = PetService();
   late Future<List<Pet>> _pets;
+  late Future<List<Consulta>> _consultas;
 
-  @override //alt
+  @override
   void initState(){
     super.initState();
-    _pets = _petService.getPets();
+    _pets = _petService.listarPets();
+    _consultas = _consultaService.listarConsultas();
   }
 
-  void _atualizaPets(){ //alt
+  void _atualizaPets(){
     setState(() {
-      _pets = _petService.getPets();
+      _pets = _petService.listarPets();
     });
   }
 
-  void _excluir(int? idPet) {
+  void _atualizaConsultas(){
+    setState(() {
+      _consultas = _consultaService.listarConsultas();
+    });
+  }
+
+  void _excluirPet(int? idPet) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirmar exclusão'),
-        content: const Text('Tem certeza que deseja excluir os dados?'),
+        content: const Text('Tem certeza que deseja excluir os dados?', style: TextStyle(
+          fontSize: 17,
+        ),),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -44,13 +60,42 @@ class _MainScreenState extends State<MainScreen> {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              await _petService.deletePet(idPet);
-              _atualizaPets(); // atualiza a lista
+              await _petService.excluirPet(idPet);
+              _atualizaPets();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Dados excluídos com sucesso!')),
               );
             },
             child: const Text('Excluir', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _desmarcarConsulta(int? idConsulta) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Desmarcar consulta'),
+        content: const Text('Tem certeza que deseja desmarcar a consulta?', style: TextStyle(
+          fontSize: 17,
+        )),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _petService.excluirPet(idConsulta);
+              _atualizaPets();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Consulta desmarcada com sucesso!')),
+              );
+            },
+            child: const Text('Desmarcar', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -103,26 +148,69 @@ class _MainScreenState extends State<MainScreen> {
         Scaffold(
           body: Padding(
             padding: EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _Titulo('Consultas'),
-                Expanded( //TODO: if com mensagem "não há consultas agendadas. Clique em + para adicionar"
-                    child: ListView(
-                      children: <Widget>[
-                        _ItemConsulta(),
-                        _ItemConsulta(),
-                        _ItemConsulta()
-                      ],
-                    )
-                ),
-              ],
+            child: FutureBuilder<List<Consulta>>(
+              future: _consultas,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Erro: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('Nenhuma consulta marcada.'));
+                }
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final consulta = snapshot.data![index];
+                    return Card(
+                      margin: EdgeInsets.all(8),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.all(16),
+                        title: Text(DateFormat('dd/MM/yyyy').format(consulta.dia!), style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                        subtitle: Text('Paciente: ${consulta.nomePet}\nAssunto: ${consulta.assunto}', style: TextStyle(fontSize: 20)),
+                        isThreeLine: true,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit, size: 35,),
+                              onPressed: () async {
+                                final updated = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditarConsultaScreen(consulta: consulta),
+                                  ),
+                                );
+                                if (updated == true) {
+                                  _atualizaConsultas();
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.cancel, color: Colors.red, size: 35,),
+                              onPressed: () => _desmarcarConsulta(consulta.idConsulta),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
           floatingActionButton: _BotaoAdd(
-              onPressed: () {
-                debugPrint('adicionar consulta');
-              }
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddConsultaScreen(),
+                  ),
+                );
+                _atualizaConsultas();
+              },
           ),
         ),
 
@@ -150,17 +238,22 @@ class _MainScreenState extends State<MainScreen> {
                       margin: EdgeInsets.all(8),
                       child: ListTile(
                         contentPadding: EdgeInsets.all(16),
-                        leading: CircleAvatar(
+                        leading: CircleAvatar(radius: 25,
                           backgroundColor: Colors.blue[100],
-                          child: Text(pet.nome.substring(0,1)),
+                          child: Text(pet.nome.substring(0,1), style: TextStyle(
+                            fontSize: 30,
+                          ),),
                         ),
-                        title: Text(pet.nome, style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text("${pet.especie} ${pet.sexo}"),
+                        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => VisualizarPetScreen(pet: pet)
+                        )),
+                        title: Text(pet.nome, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+                        subtitle: Text("${pet.especie} ${pet.sexo}", style: TextStyle(fontSize: 16),),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.edit),
+                              icon: Icon(Icons.edit, size: 35,),
                               onPressed: () async {
                                 final updated = await Navigator.push(
                                   context,
@@ -169,13 +262,13 @@ class _MainScreenState extends State<MainScreen> {
                                   ),
                                 );
                                 if (updated == true) {
-                                  _atualizaPets(); // Atualiza a lista
+                                  _atualizaPets();
                                 }
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _excluir(pet.idPet),
+                              icon: Icon(Icons.delete, color: Colors.red, size: 35,),
+                              onPressed: () => _excluirPet(pet.idPet),
                             ),
                           ],
                         ),
@@ -187,11 +280,15 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           floatingActionButton: _BotaoAdd(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddPetScreen()
-                ));
-              }
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddPetScreen(),
+                  ),
+                );
+                _atualizaPets();
+              },
           ),
         ),
 
@@ -201,7 +298,6 @@ class _MainScreenState extends State<MainScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _Titulo('Conta'),
               Padding( // Foto perfil
                 padding: EdgeInsets.all(20.0),
                 child: CircleAvatar(
@@ -220,13 +316,13 @@ class _MainScreenState extends State<MainScreen> {
                       ListTile(
                         leading: Icon(Icons.person),
                         title: Text('Nome Completo', style: TextStyle(fontSize: 20),),
-                        subtitle: Text('João da Silva', style: TextStyle(fontSize: 18)),
+                        subtitle: Text('Pessoa Sobrenome', style: TextStyle(fontSize: 18)),
                       ),
                       Divider(),
                       ListTile(
                         leading: Icon(Icons.email),
                         title: Text('E-mail', style: TextStyle(fontSize: 20),),
-                        subtitle: Text('joao@email.com', style: TextStyle(fontSize: 18)),
+                        subtitle: Text('pessoa@email.com', style: TextStyle(fontSize: 18)),
                       ),
                     ],
                   ),
@@ -249,7 +345,7 @@ class _MainScreenState extends State<MainScreen> {
               const SizedBox(height: 10),
               TextButton.icon(
                 onPressed: () {
-                  // TODO: Implementar exclusão de conta
+                  debugPrint('exclusão da conta');
                 },
                 icon: const Icon(Icons.delete, color: Colors.red),
                 label: const Text('Excluir Conta', style: TextStyle(color: Colors.red, fontSize: 18)),
@@ -261,42 +357,6 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ][currentPageIndex],
-    );
-  }
-}
-
-class _Titulo extends StatelessWidget {
-  final String texto;
-  const _Titulo(this.texto);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: 10.0,
-        vertical: 10.0,
-      ),
-      child: Text(texto,
-          style: Theme.of(context).textTheme.headlineLarge
-      ),
-    );
-  }
-}
-
-class _ItemConsulta extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-        margin: EdgeInsets.all(10),
-        child: ListTile(
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => ConsultaVisualizarScreen()
-          )),
-          title: Text('Data: 10/10/2025', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          subtitle: Text('Paciente: Pipoca\nAssunto: Vacinação', style: TextStyle(fontSize: 20)),
-          isThreeLine: true,
-        )
     );
   }
 }
@@ -347,37 +407,3 @@ class _BotaoAdd extends StatelessWidget {
     );
   }
 }
-
-/* linha 106
-Column(
-crossAxisAlignment: CrossAxisAlignment.stretch,
-children: [
-_Titulo('Pets'),
-Expanded(
-child: ListView(
-children: [
-_ItemPet(),
-_ItemPet(),
-],
-)
-)
-],
-),*/
-
-/*class _ItemPet extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10),
-      child: ListTile(
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => PetVisualizarScreen()
-        )),
-        leading: CircleAvatar(radius: 25, child: Icon(Icons.pets)),
-        title: Text('Pipoca', style: TextStyle(fontSize: 22)),
-        subtitle: Text('Gato macho', style: TextStyle(fontSize: 16)),
-      ),
-    );
-  }
-}*/

@@ -4,20 +4,20 @@ import '../persistence/pet_dao.dart';
 class PetService {
   final PetDao _petDao = PetDao();
 
-  Future<int> addPet(Pet pet) async {
-    return await _petDao.insertPet(pet);
+  Future<int> inserirPet(Pet pet) async {
+    return await _petDao.inserirPet(pet);
   }
 
-  Future<List<Pet>> getPets() async {
-    return await _petDao.getAllPets();
+  Future<List<Pet>> listarPets() async {
+    return await _petDao.listarPets();
   }
 
-  Future<int> updatePet(Pet pet) async {
-    return await _petDao.updatePet(pet);
+  Future<int> editarPet(Pet pet) async {
+    return await _petDao.editarPet(pet);
   }
 
-  Future<void> deletePet(int? id) async {
-    return await _petDao.deletePet(id);
+  Future<void> excluirPet(int? id) async {
+    return await _petDao.excluirPet(id);
   }
 
 }

@@ -36,7 +36,8 @@ class AppDatabase {
           CREATE TABLE consultas(
             idConsulta INTEGER PRIMARY KEY AUTOINCREMENT,
             idPet INTEGER,
-            data TEXT,
+            nomePet TEXT,
+            dia TEXT,
             assunto TEXT,
             FOREIGN KEY (idPet) REFERENCES pets (idPet)
           )

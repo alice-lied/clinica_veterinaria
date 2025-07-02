@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Pet {
   final int? idPet;
   final String nome;
@@ -41,5 +43,9 @@ class Pet {
     );
   }
 
+  String formatarData() {
+    if (nascimento == null) return 'Data não disponível';
+    return DateFormat('dd/MM/yyyy').format(nascimento!);
+  }
 
 }

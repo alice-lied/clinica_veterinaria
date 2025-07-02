@@ -21,7 +21,7 @@ class AddPetScreenState extends State<AddPetScreen> {
   String _especie = 'cachorro';
   String _sexo = 'macho';
 
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> _selecionarData(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -38,16 +38,23 @@ class AddPetScreenState extends State<AddPetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Registrar pet')),
+      appBar: AppBar(
+        title: const Text('Registrar pet', style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w500,
+            color: Colors.white
+        )),
+        backgroundColor: Colors.teal,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
                 controller: _nomeController,
-                decoration: const InputDecoration(labelText: 'Nome'),
+                decoration: const InputDecoration(labelText: 'Nome', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo obrigatório';
@@ -55,8 +62,9 @@ class AddPetScreenState extends State<AddPetScreen> {
                   return null;
                 },
               ),
+              SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Espécie',),
+                decoration: const InputDecoration(labelText: 'Espécie', border: OutlineInputBorder()),
                 value: _especie,
                 items: <String>['cachorro', 'gato']
                     .map<DropdownMenuItem<String>>((String value) {
@@ -71,8 +79,9 @@ class AddPetScreenState extends State<AddPetScreen> {
                   });
                 },
               ),
+              SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Sexo',),
+                decoration: const InputDecoration(labelText: 'Sexo', border: OutlineInputBorder()),
                 value: _sexo,
                 items: <String>['macho', 'fêmea']
                     .map<DropdownMenuItem<String>>((String value) {
@@ -87,9 +96,10 @@ class AddPetScreenState extends State<AddPetScreen> {
                   });
                 },
               ),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _racaController,
-                decoration: const InputDecoration(labelText: 'Raça'),
+                decoration: const InputDecoration(labelText: 'Raça', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo obrigatório';
@@ -97,8 +107,9 @@ class AddPetScreenState extends State<AddPetScreen> {
                   return null;
                 },
               ),
+              SizedBox(height: 20),
               InkWell(
-                onTap: () => _selectDate(context),
+                onTap: () => _selecionarData(context),
                 child: InputDecorator(
                   decoration: InputDecoration(
                     labelText: 'Data de Nascimento',
@@ -117,6 +128,7 @@ class AddPetScreenState extends State<AddPetScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _obsController,
                 decoration: InputDecoration(
@@ -125,11 +137,16 @@ class AddPetScreenState extends State<AddPetScreen> {
                 ),
                 maxLines: 4,
               ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: (){
                   _salvarPet();
                 },
-                child: const Text('Salvar'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(16),
+                  backgroundColor: Colors.green[200],
+                ),
+                child: const Text('Salvar', style: TextStyle(fontSize: 18, color: Colors.black87)),
               ),
             ],
           ),
@@ -150,9 +167,7 @@ class AddPetScreenState extends State<AddPetScreen> {
           nascimento: _nascimento,
           obs: _obsController.text
         );
-        await _petService.addPet(pet);
-
-        print(pet.toMap());
+        await _petService.inserirPet(pet);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pet registrado com sucesso!')),

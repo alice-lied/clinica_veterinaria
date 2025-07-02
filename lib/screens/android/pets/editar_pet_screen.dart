@@ -49,20 +49,28 @@ class _EditarPetScreenState extends State<EditarPetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Editar pet')),
+      appBar: AppBar(
+          title: const Text('Editar pet', style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w500,
+              color: Colors.white
+          )),
+        backgroundColor: Colors.teal,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
                 controller: _nomeController,
-                decoration: const InputDecoration(labelText: 'Nome da turma'),
+                decoration: const InputDecoration(labelText: 'Nome', border: OutlineInputBorder()),
                 validator: (value) => value!.isEmpty ? 'Campo obrigatório' : null,
               ),
+              SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Espécie',),
+                decoration: const InputDecoration(labelText: 'Espécie', border: OutlineInputBorder()),
                 value: _especie,
                 items: <String>['cachorro', 'gato']
                     .map<DropdownMenuItem<String>>((String value) {
@@ -77,8 +85,9 @@ class _EditarPetScreenState extends State<EditarPetScreen> {
                   });
                 },
               ),
+              SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Sexo',),
+                decoration: const InputDecoration(labelText: 'Sexo', border: OutlineInputBorder()),
                 value: _sexo,
                 items: <String>['macho', 'fêmea']
                     .map<DropdownMenuItem<String>>((String value) {
@@ -93,9 +102,10 @@ class _EditarPetScreenState extends State<EditarPetScreen> {
                   });
                 },
               ),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _racaController,
-                decoration: const InputDecoration(labelText: 'Raça'),
+                decoration: const InputDecoration(labelText: 'Raça', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Campo obrigatório';
@@ -103,6 +113,7 @@ class _EditarPetScreenState extends State<EditarPetScreen> {
                   return null;
                 },
               ),
+              SizedBox(height: 20),
               InkWell(
                 onTap: () => _selectDate(context),
                 child: InputDecorator(
@@ -123,6 +134,7 @@ class _EditarPetScreenState extends State<EditarPetScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _obsController,
                 decoration: InputDecoration(
@@ -131,11 +143,16 @@ class _EditarPetScreenState extends State<EditarPetScreen> {
                 ),
                 maxLines: 4,
               ),
+              SizedBox(height: 20),
               ElevatedButton(
                 onPressed: (){
                   _editarPet();
                 },
-                child: const Text('Salvar'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(16),
+                  backgroundColor: Colors.green[200],
+                ),
+                child: const Text('Salvar', style: TextStyle(fontSize: 18, color: Colors.black87)),
               ),
             ],
           ),
@@ -156,9 +173,7 @@ class _EditarPetScreenState extends State<EditarPetScreen> {
           nascimento: _nascimento,
           obs: _obsController.text
         );
-        await _petService.updatePet(petEditado);
-
-        print(petEditado); //debug
+        await _petService.editarPet(petEditado);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Dados editados com sucesso!')),

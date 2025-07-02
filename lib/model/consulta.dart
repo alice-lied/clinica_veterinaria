@@ -1,13 +1,17 @@
+import 'package:intl/intl.dart';
+
 class Consulta {
   final int? idConsulta;
   final int? idPet;
-  final DateTime data;
+  final String nomePet;
+  final DateTime? dia;
   final String assunto;
 
   Consulta({
     this.idConsulta,
     required this.idPet,
-    required this.data,
+    required this.nomePet,
+    this.dia,
     required this.assunto,
   });
 
@@ -15,36 +19,27 @@ class Consulta {
     return {
       'idConsulta': idConsulta,
       'idPet': idPet,
-      'data': data,
+      'nomePet': nomePet,
+      'dia': dia?.toIso8601String(),
       'assunto': assunto,
     };
   }
 
   factory Consulta.fromMap(Map<String, dynamic> map) {
     return Consulta(
-      idConsulta: map['idConsulta'],
-      idPet: map['idPet'],
-      data: map['data'],
-      assunto: map['assunto'],
+      idConsulta: map['idConsulta'] as int?,
+      idPet: map['idPet'] as int,
+      nomePet: map['nomePet'] as String,
+      dia: map['dia'] != null
+          ? DateTime.tryParse(map['dia'] as String)
+          : null,
+      assunto: map['assunto'] as String,
     );
   }
 
+  String formatarData() {
+    if (dia == null) return 'Data não disponível';
+    return DateFormat('dd/MM/yyyy').format(dia!);
+  }
+
 }
-
-/*  Consulta(this._id, this._data, this._assunto, this._pet);
-
-  int get id{
-    return _id;
-  }
-
-  DateTime get data{
-    return _data;
-  }
-
-  String get assunto{
-    return _assunto;
-  }
-
-  Pet get pet{
-    return _pet;
-  }*/

@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 
-class VisualizarPetScreen extends StatelessWidget {
-  const VisualizarPetScreen({super.key});
+import '../../../model/pet.dart';
+
+class VisualizarPetScreen extends StatefulWidget {
+  final Pet pet;
+  const VisualizarPetScreen({super.key, required this.pet});
+
+  @override
+  _VisualizarPetScreenState createState() => _VisualizarPetScreenState();
+
+}
+
+class _VisualizarPetScreenState extends State<VisualizarPetScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +48,9 @@ class VisualizarPetScreen extends StatelessWidget {
               padding: EdgeInsets.all(20.0),
               child: CircleAvatar(
                 radius: 60,
-                child: Icon(Icons.pets, size: 60),
+                child: Text(widget.pet.nome.substring(0,1), style: TextStyle(
+                  fontSize: 60,
+                ),),
               ),
             ),
             SizedBox(height: 20),
@@ -50,63 +62,38 @@ class VisualizarPetScreen extends StatelessWidget {
                   children: [
                     ListTile(
                       title: Text('Nome', style: TextStyle(fontSize: 20),),
-                      subtitle: Text('Pipoca', style: TextStyle(fontSize: 18)),
+                      subtitle: Text(widget.pet.nome, style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
                       title: Text('Espécie', style: TextStyle(fontSize: 20),),
-                      subtitle: Text('Gato', style: TextStyle(fontSize: 18)),
+                      subtitle: Text(widget.pet.especie, style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
                       title: Text('Sexo', style: TextStyle(fontSize: 20),),
-                      subtitle: Text('Masculino', style: TextStyle(fontSize: 18)),
+                      subtitle: Text(widget.pet.sexo, style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
                       title: Text('Raça', style: TextStyle(fontSize: 20),),
-                      subtitle: Text('SRD', style: TextStyle(fontSize: 18)),
+                      subtitle: Text(widget.pet.raca, style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
                       title: Text('Data de nascimento', style: TextStyle(fontSize: 20),),
-                      subtitle: Text('19/06/2018', style: TextStyle(fontSize: 18)),
+                      subtitle: Text(widget.pet.formatarData(), style: TextStyle(fontSize: 18)),
                     ),
                     Divider(),
                     ListTile(
                       title: Text('Observações', style: TextStyle(fontSize: 20),),
-                      subtitle: Text('Tomar remédio p/ vermes\nLimpar orelhas 1 vez por semana', style: TextStyle(fontSize: 18)),
+                      subtitle: Text(widget.pet.obs != null ? widget.pet.obs! : 'Sem observações', style: TextStyle(fontSize: 18)),
                       isThreeLine: true,
                     ),
                   ],
                 ),
               ),
             ),
-            ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Implementar lógicas de botões
-                debugPrint('editar dados do pet');
-              },
-              icon: Icon(Icons.edit, color: Colors.black87),
-              label: Text('Editar dados', style: TextStyle(fontSize: 18, color: Colors.black87)),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.all(16),
-                backgroundColor: Colors.grey[200],
-              ),
-            ),
-            SizedBox(height: 10),
-            TextButton.icon(
-              onPressed: () {
-                // TODO: Implementar exclusão de conta
-                debugPrint('apagar dados do pet');
-              },
-              icon: const Icon(Icons.delete, color: Colors.red),
-              label: const Text('Apagar dados', style: TextStyle(color: Colors.red, fontSize: 18)),
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.all(16),
-              ),
-            ),
-            SizedBox(height: 20),
           ],
         ),
       ),
