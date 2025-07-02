@@ -1,8 +1,8 @@
-import 'package:clinica_veterinaria/screens/android/pets/add_pet_screen.dart';
-import 'package:clinica_veterinaria/screens/android/pets/editar_pet_screen.dart';
-import 'package:clinica_veterinaria/screens/android/pets/visualizar_pet_screen.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../model/consulta.dart';
 import '../../model/pet.dart';
@@ -10,6 +10,9 @@ import '../../service/consulta_service.dart';
 import '../../service/pet_service.dart';
 import 'consulta/add_consulta_screen.dart';
 import 'consulta/editar_consulta_screen.dart';
+import 'pets/add_pet_screen.dart';
+import 'pets/editar_pet_screen.dart';
+import 'pets/visualizar_pet_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -24,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   final PetService _petService = PetService();
   late Future<List<Pet>> _pets;
   late Future<List<Consulta>> _consultas;
+  File? _imagemSelecionada;
 
   @override
   void initState(){
@@ -89,8 +93,8 @@ class _MainScreenState extends State<MainScreen> {
           TextButton(
             onPressed: () async {
               Navigator.of(context).pop();
-              await _petService.excluirPet(idConsulta);
-              _atualizaPets();
+              await _consultaService.excluirConsulta(idConsulta);
+              _atualizaConsultas();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Consulta desmarcada com sucesso!')),
               );
@@ -98,6 +102,46 @@ class _MainScreenState extends State<MainScreen> {
             child: const Text('Desmarcar', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _escolherImagem() async {
+    final ImagePicker picker = ImagePicker();
+
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Tirar foto'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final XFile? imagem = await picker.pickImage(source: ImageSource.camera);
+                if (imagem != null) {
+                  setState(() {
+                    _imagemSelecionada = File(imagem.path);
+                  });
+                }
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo_library),
+              title: Text('Selecionar da galeria'),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final XFile? imagem = await picker.pickImage(source: ImageSource.gallery);
+                if (imagem != null) {
+                  setState(() {
+                    _imagemSelecionada = File(imagem.path);
+                  });
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -238,9 +282,19 @@ class _MainScreenState extends State<MainScreen> {
                       margin: EdgeInsets.all(8),
                       child: ListTile(
                         contentPadding: EdgeInsets.all(16),
-                        leading: CircleAvatar(radius: 25,
+                        leading: CircleAvatar(
+                          radius: 25,
                           backgroundColor: Colors.blue[100],
-                          child: Text(pet.nome.substring(0,1), style: TextStyle(
+                          child: pet.foto != null
+                              ? ClipOval(
+                            child: Image.file(
+                              pet.foto!,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                              : Text(pet.nome.substring(0,1), style: TextStyle(
                             fontSize: 30,
                           ),),
                         ),
@@ -300,10 +354,22 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               Padding( // Foto perfil
                 padding: EdgeInsets.all(20.0),
+                child: GestureDetector(
+                  onTap: _escolherImagem,
                 child: CircleAvatar(
-                radius: 60,
-                child: Icon(Icons.person, size: 60),
+                radius: 80,
+                  child: _imagemSelecionada != null
+                      ? ClipOval(
+                    child: Image.file(
+                      _imagemSelecionada!,
+                      width: 160,
+                      height: 160,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                      : Icon(Icons.camera_alt, size: 60),
                 ),
+               ),
               ),
               const SizedBox(height: 20),
               // Dados do usuário
