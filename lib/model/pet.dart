@@ -10,7 +10,6 @@ class Pet {
   final String raca;
   final DateTime? nascimento;
   final String? obs;
-  final File? foto;
 
   Pet({
     this.idPet,
@@ -20,7 +19,6 @@ class Pet {
     required this.raca,
     this.nascimento,
     this.obs,
-    this.foto
   });
 
   Map<String, dynamic> toMap(){
@@ -32,7 +30,6 @@ class Pet {
       'raca': raca,
       'nascimento': nascimento?.toIso8601String(),
       'obs': obs,
-      'foto': foto
     };
   }
 
@@ -45,7 +42,6 @@ class Pet {
       raca: map['raca'] as String,
       nascimento: map['nascimento'] != null ? DateTime.parse(map['nascimento']) : null,
       obs: map['obs'] as String?,
-      foto: map['foto'] as File
     );
   }
 

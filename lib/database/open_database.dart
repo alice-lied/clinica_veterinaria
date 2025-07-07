@@ -30,7 +30,6 @@ class AppDatabase {
             raca TEXT,
             nascimento TEXT,
             obs TEXT
-            foto TEXT
           )
         ''');
         await db.execute('''

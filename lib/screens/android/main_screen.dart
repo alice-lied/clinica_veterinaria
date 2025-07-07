@@ -285,17 +285,8 @@ class _MainScreenState extends State<MainScreen> {
                         leading: CircleAvatar(
                           radius: 25,
                           backgroundColor: Colors.blue[100],
-                          child: pet.foto != null
-                              ? ClipOval(
-                            child: Image.file(
-                              pet.foto!,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                              : Text(pet.nome.substring(0,1), style: TextStyle(
-                            fontSize: 30,
+                          child: Text(pet.nome.substring(0,1), style: TextStyle(
+                            fontSize: 26,
                           ),),
                         ),
                         onTap: () => Navigator.of(context).push(MaterialPageRoute(
