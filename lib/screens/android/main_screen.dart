@@ -221,15 +221,13 @@ class _MainScreenState extends State<MainScreen> {
                             IconButton(
                               icon: Icon(Icons.edit, size: 35,),
                               onPressed: () async {
-                                final updated = await Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => EditarConsultaScreen(consulta: consulta),
                                   ),
                                 );
-                                if (updated == true) {
-                                  _atualizaConsultas();
-                                }
+                                _atualizaConsultas(); // atualiza sempre após retornar
                               },
                             ),
                             IconButton(

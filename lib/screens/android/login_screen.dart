@@ -74,8 +74,6 @@ class LoginScreen extends StatelessWidget {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
 
-                              // TODO: implementar lógica de login
-
                               Navigator.pushReplacement<void, void>(
                                 context,
                                 MaterialPageRoute<void>(

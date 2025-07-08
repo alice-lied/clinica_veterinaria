@@ -139,6 +139,7 @@ class _EditarConsultaScreenState extends State<EditarConsultaScreen> {
     if (_formKey.currentState!.validate()) {
       try {
         final consultaEditada = Consulta(
+          idConsulta: widget.consulta.idConsulta,
           idPet: _petSelecionado!.idPet,
           nomePet: _petSelecionado!.nome,
           dia: _dia,
